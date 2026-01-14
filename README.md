@@ -21,11 +21,13 @@ Skup podataka (batch/istorijski skup podataka) predstavlja kolekciju zapisa mre�
 * Prema kojim  DNS domenima su najčešće postavljani upiti?
 * Koliko dugo mogu biti keširani DNS domeni u sekundama?
 
+Odgovori na pitanja se mogu naći u sklopu Metabase dashboard- a pod nazivom `Historical data - Internet traffic`.
+
 U nastavku je opisan način pristupa pojedinačnim alatima klastera.
 
 ## Apache Airflow
 
-Pristupa se putem WEB adrese [http://localhost:8080/](http://localhost:8080/). Kredencijali za pristup:
+Pristupa se putem WEB adrese [http://localhost:8080](http://localhost:8080). Kredencijali za pristup:
 ```
 username: airflow
 password: airflow
@@ -33,11 +35,11 @@ password: airflow
 
 ## Hadoop
 
-Pristupa se putem WEB adrese [http://localhost:9870/](http://localhost:9870/). Moguće je pregledati distribuirani file sistem (HDFS).
+Pristupa se putem WEB adrese [http://localhost:9870](http://localhost:9870). Moguće je pregledati distribuirani file sistem (HDFS).
 
 ## Apache Spark
 
-Pristupa se putem WEB adrese [http://localhost:8000/](http://localhost:8000/). Moguće je pratiti izvršenje poslova koji su predati Apache Spark klasteru.
+Pristupa se putem WEB adrese [http://localhost:8000](http://localhost:8000). Moguće je pratiti izvršenje poslova koji su predati Apache Spark klasteru.
 
 ## MongoDB
 
@@ -49,7 +51,7 @@ password: admin
 
 ## Metabase
 
-Pristupa se putem WEB adrese [http://localhost:3000/](http://localhost:3000/). Vizualizacioni alat koji služi za prikaz pročišćenih podataka (podataka iz Mongo baze). Ukoliko na početku pokretanja klastera nije odabrana opcija da se uradi restore baze podataka ovog alata biće podignuta "prazna" instanca. Kredencijali za pristup:
+Pristupa se putem WEB adrese [http://localhost:3000](http://localhost:3000). Vizualizacioni alat koji služi za prikaz pročišćenih podataka (podataka iz Mongo baze). Ukoliko na početku pokretanja klastera nije odabrana opcija da se uradi restore baze podataka ovog alata biće podignuta "prazna" instanca. Kredencijali za pristup:
 ```
 username: asvsp@uns.ac.rs
 password: asvsp25
