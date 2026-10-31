@@ -4,7 +4,11 @@ import sys
 if __name__ == "__main__":
     output_transformed_dir = sys.argv[1]
 
-    spark = SparkSession.builder.appName("transform_transportation_data").getOrCreate()
+    spark = (
+        SparkSession.builder.appName("transform_transportation_data")
+        .config("spark.sql.caseSensitive", "true")
+        .getOrCreate()
+    )
 
     df = spark.read.parquet(f"{output_transformed_dir}/initial_data")
 

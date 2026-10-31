@@ -1,3 +1,5 @@
-apache-airflow-providers-apache-hdfs==4.11.1
-apache-airflow-providers-apache-spark==5.4.1
-apache-airflow-providers-common-compat==1.10.1
+apache-airflow-providers-apache-hdfs==4.13.0
+apache-airflow-providers-apache-spark==6.3.2
+apache-airflow-providers-celery==3.24.0
+apache-airflow-providers-postgres==7.0.2
+pyspark==4.2.0

@@ -4,11 +4,13 @@ import sys
 if __name__ == "__main__":
     output_transformed_dir = sys.argv[1]
 
-    spark = SparkSession.builder.appName("transform_dns_queries_data").getOrCreate()
+    spark = (
+        SparkSession.builder.appName("transform_dns_queries_data")
+        .config("spark.sql.caseSensitive", "true")
+        .getOrCreate()
+    )
 
     df = spark.read.parquet(f"{output_transformed_dir}/initial_data")
-
-    spark.conf.set("spark.sql.caseSensitive", "true")
 
     dns_queries_df = (
         df.where(sf.col("payload.payload.payload.layer_type") == "DNS")
@@ -33,7 +35,5 @@ if __name__ == "__main__":
     )
 
     dns_queries_df.show()
-
-    spark.conf.set("spark.sql.caseSensitive", "false")
 
     spark.stop()

@@ -53,6 +53,6 @@ password: admin
 
 Pristupa se putem WEB adrese [http://localhost:3000](http://localhost:3000). Vizualizacioni alat koji služi za prikaz pročišćenih podataka (podataka iz Mongo baze). Ukoliko na početku pokretanja klastera nije odabrana opcija da se uradi restore baze podataka ovog alata biće podignuta "prazna" instanca. Kredencijali za pristup:
 ```
-username: asvsp@uns.ac.rs
+username: asvsp@ftn.uns.ac.rs
 password: asvsp25
 ```

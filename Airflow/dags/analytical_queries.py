@@ -1,7 +1,10 @@
 from datetime import datetime
 
-from airflow.sdk import dag, Variable
+from airflow.sdk import BaseHook, Variable, dag
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
+
+
+MONGO_CONNECTOR = "org.mongodb.spark:mongo-spark-connector_2.13:11.1.0"
 
 
 @dag(
@@ -12,169 +15,29 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
     catchup=False,
 )
 def analytical_queries():
+    hdfs_default_fs = BaseHook.get_connection(
+        "HDFS_CONNECTION"
+    ).extra_dejson["default_fs"]
+    mongo_uri = Variable.get("MONGO_URI")
 
-    HDFS_DEFAULT_FS = Variable.get("HDFS_DEFAULT_FS")
-    MONGO_URI = Variable.get("MONGO_URI")
+    def mongo_job(task_id, application, hdfs_path):
+        return SparkSubmitOperator(
+            task_id=task_id,
+            application=f"/opt/airflow/files/spark/analytical_jobs/{application}",
+            conn_id="SPARK_CONNECTION",
+            verbose=False,
+            conf={"spark.jars.packages": MONGO_CONNECTOR},
+            application_args=[f"{hdfs_default_fs}/transformed_data/{hdfs_path}", mongo_uri, "analytical"],
+        )
 
-    packets_per_day = SparkSubmitOperator(
-        task_id="packets_per_day",
-        application="/opt/airflow/files/spark/analytical_jobs/packets_per_day.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/packets",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
-
-    top_source_ips = SparkSubmitOperator(
-        task_id="top_source_ips",
-        application="/opt/airflow/files/spark/analytical_jobs/top_source_ips.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/ip_flows",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
-
-    top_destination_ips = SparkSubmitOperator(
-        task_id="top_destination_ips",
-        application="/opt/airflow/files/spark/analytical_jobs/top_destination_ips.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/ip_flows",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
-
-    protocol_distribution = SparkSubmitOperator(
-        task_id="protocol_distribution",
-        application="/opt/airflow/files/spark/analytical_jobs/protocol_distribution.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/ip_flows",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
-
-    avg_packet_size = SparkSubmitOperator(
-        task_id="avg_packet_size",
-        application="/opt/airflow/files/spark/analytical_jobs/avg_packet_size.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/ip_flows",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
-
-    top_destination_ports = SparkSubmitOperator(
-        task_id="top_destination_ports",
-        application="/opt/airflow/files/spark/analytical_jobs/top_destination_ports.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/transport_flows",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
-
-    dns_query_frequency = SparkSubmitOperator(
-        task_id="dns_query_frequency",
-        application="/opt/airflow/files/spark/analytical_jobs/dns_query_frequency.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/dns_queries",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
-
-    dns_ttl_stability = SparkSubmitOperator(
-        task_id="dns_ttl_stability",
-        application="/opt/airflow/files/spark/analytical_jobs/dns_ttl_stability.py",
-        conn_id="SPARK_CONNECTION",
-        verbose=False,
-        conf={
-            "spark.jars": "/opt/spark/jars/mongo-spark-connector_2.12-10.2.0.jar,"
-            "/opt/spark/jars/mongodb-driver-sync-4.8.2.jar,"
-            "/opt/spark/jars/mongodb-driver-core-4.8.2.jar,"
-            "/opt/spark/jars/bson-4.8.2.jar",
-            "spark.executor.extraClassPath": "/opt/spark/jars/*",
-            "spark.driver.extraClassPath": "/opt/spark/jars/*",
-        },
-        application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data/dns_answers",
-            MONGO_URI,
-            "analytical",
-        ],
-    )
+    packets_per_day = mongo_job("packets_per_day", "packets_per_day.py", "packets")
+    top_source_ips = mongo_job("top_source_ips", "top_source_ips.py", "ip_flows")
+    top_destination_ips = mongo_job("top_destination_ips", "top_destination_ips.py", "ip_flows")
+    protocol_distribution = mongo_job("protocol_distribution", "protocol_distribution.py", "ip_flows")
+    avg_packet_size = mongo_job("avg_packet_size", "avg_packet_size.py", "ip_flows")
+    top_destination_ports = mongo_job("top_destination_ports", "top_destination_ports.py", "transport_flows")
+    dns_query_frequency = mongo_job("dns_query_frequency", "dns_query_frequency.py", "dns_queries")
+    dns_ttl_stability = mongo_job("dns_ttl_stability", "dns_ttl_stability.py", "dns_answers")
 
     (
         packets_per_day

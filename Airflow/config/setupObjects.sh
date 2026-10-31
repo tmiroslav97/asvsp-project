@@ -15,11 +15,13 @@ airflow connections add 'AIRFLOW_DB_CONNECTION' \
 
 airflow connections add 'HDFS_CONNECTION' \
     --conn-json '{
-        "conn_type": "hdfs",
+        "conn_type": "webhdfs",
+        "login": "hadoop",
         "host": "namenode",
         "port": 9870,
         "extra": {
-            "use_ssl": false
+            "use_ssl": false,
+            "default_fs": "hdfs://namenode:9000"
         }
     }'
 
@@ -47,5 +49,4 @@ airflow connections add 'LOCAL_FS_FILES' \
 
 # Set up variables
 echo ">> Setting up airflow variables"
-airflow variables set HDFS_DEFAULT_FS "hdfs://namenode:9000"
 airflow variables set MONGO_URI "mongodb://admin:admin@mongodb:27017"

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from airflow.sdk import dag, Variable
+from airflow.sdk import BaseHook, dag
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 
 
@@ -12,8 +12,9 @@ from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOpe
     catchup=False,
 )
 def transform_raw_data():
-
-    HDFS_DEFAULT_FS = Variable.get("HDFS_DEFAULT_FS")
+    hdfs_default_fs = BaseHook.get_connection(
+        "HDFS_CONNECTION"
+    ).extra_dejson["default_fs"]
 
     prepare_initial_data = SparkSubmitOperator(
         task_id="prepare_initial_data",
@@ -21,8 +22,8 @@ def transform_raw_data():
         conn_id="SPARK_CONNECTION",
         verbose=False,
         application_args=[
-            f"{HDFS_DEFAULT_FS}/raw_data/packets_sample.jsonl",
-            f"{HDFS_DEFAULT_FS}/transformed_data",
+            f"{hdfs_default_fs}/raw_data/packets_sample.jsonl",
+            f"{hdfs_default_fs}/transformed_data",
         ],
     )
 
@@ -32,7 +33,7 @@ def transform_raw_data():
         conn_id="SPARK_CONNECTION",
         verbose=False,
         application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data",
+            f"{hdfs_default_fs}/transformed_data",
         ],
     )
 
@@ -42,7 +43,7 @@ def transform_raw_data():
         conn_id="SPARK_CONNECTION",
         verbose=False,
         application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data",
+            f"{hdfs_default_fs}/transformed_data",
         ],
     )
 
@@ -52,7 +53,7 @@ def transform_raw_data():
         conn_id="SPARK_CONNECTION",
         verbose=False,
         application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data",
+            f"{hdfs_default_fs}/transformed_data",
         ],
     )
 
@@ -62,7 +63,7 @@ def transform_raw_data():
         conn_id="SPARK_CONNECTION",
         verbose=False,
         application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data",
+            f"{hdfs_default_fs}/transformed_data",
         ],
     )
 
@@ -72,7 +73,7 @@ def transform_raw_data():
         conn_id="SPARK_CONNECTION",
         verbose=False,
         application_args=[
-            f"{HDFS_DEFAULT_FS}/transformed_data",
+            f"{hdfs_default_fs}/transformed_data",
         ],
     )
 
