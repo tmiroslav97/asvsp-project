@@ -29,10 +29,11 @@ echo "> Setting up services"
 
 echo ">> Setting up Airflow objects"
 cmd='bash -c "/opt/airflow/config/setupObjects.sh"'
-docker exec -it airflow-airflow-apiserver-1 $cmd
+docker exec -it airflow-airflow-webserver-1 $cmd
 
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+    sleep 60
     echo ">> Restoring Metabase database"
     cmd='bash -c "/config/restoreDB.sh"'
     docker exec -it mb-postgres $cmd

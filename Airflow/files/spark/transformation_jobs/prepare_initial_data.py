@@ -5,7 +5,11 @@ if __name__ == "__main__":
     input_file_path = sys.argv[1]
     output_transformed_dir = sys.argv[2]
 
-    spark = SparkSession.builder.appName("prepare_initial_data").getOrCreate()
+    spark = (
+        SparkSession.builder.appName("prepare_initial_data")
+        .config("spark.sql.caseSensitive", "true")
+        .getOrCreate()
+    )
 
     df = (
         spark.read.json(input_file_path)
